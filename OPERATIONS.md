@@ -38,7 +38,7 @@ Launch IB Gateway from the desktop. Login with IBKR credentials → IB API → P
 **4. Start the broker bridge**
 ```bash
 cd ~/automatedtrading && source .venv/bin/activate
-uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787
+nohup uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787 > ~/bridge.log 2>&1 &
 ```
 
 **5. Verify bridge is working**
@@ -51,7 +51,7 @@ Should return JSON with NLV and account details.
 **6. Start scheduler (new terminal tab)**
 ```bash
 cd ~/automatedtrading/orchestrator && source ../.venv/bin/activate
-python scheduler.py
+nohup python scheduler.py > ~/scheduler.log 2>&1 &
 ```
 
 Leave running. Fires at **9:35, 11:35, 13:35, 15:35 ET** on weekdays.
@@ -94,7 +94,29 @@ cat ~/automatedtrading/orchestrator/trading_memory.json | python3 -m json.tool |
 
 ---
 
-## 3. Troubleshooting
+## 3. Deploying Code Updates
+
+**On your Mac — commit and push**
+```bash
+cd ~/path/to/automated-trading
+git add .
+git commit -m "your message"
+git push
+```
+
+**On the VM — pull latest**
+```bash
+cd ~/automatedtrading
+git pull
+```
+
+> `trading_memory.json`, `.env`, `logs/`, `research_logs/`, and `reports/` are gitignored and will not be affected by `git pull`.
+
+After pulling, restart the bridge and scheduler if orchestrator.py or broker_bridge changed.
+
+---
+
+## 4. Troubleshooting
 
 ### IB Gateway Lost Session / Needs Re-Auth
 
@@ -104,7 +126,7 @@ cat ~/automatedtrading/orchestrator/trading_memory.json | python3 -m json.tool |
 4. Restart bridge:
 ```bash
 cd ~/automatedtrading && source .venv/bin/activate
-uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787
+nohup uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787 > ~/bridge.log 2>&1 &
 ```
 
 > IB Gateway is configured to auto-restart daily but may occasionally need manual intervention.
@@ -115,13 +137,13 @@ uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787
 2. Restart bridge:
 ```bash
 cd ~/automatedtrading && source .venv/bin/activate
-uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787
+nohup uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787 > ~/bridge.log 2>&1 &
 ```
 
 ### Scheduler Crashed
 ```bash
 cd ~/automatedtrading/orchestrator && source ../.venv/bin/activate
-python scheduler.py
+nohup python scheduler.py > ~/scheduler.log 2>&1 &
 ```
 
 ### Azure Auth Expired
@@ -147,7 +169,7 @@ Look for lines like `[validate] zeroing target` which indicate a hard rule trigg
 
 ---
 
-## 4. VS Code Remote SSH
+## 5. VS Code Remote SSH
 
 Connect to the VM directly in VS Code to browse files and edit code without SCP.
 
