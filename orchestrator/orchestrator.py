@@ -30,17 +30,12 @@ if not BRIDGE_TOKEN:
 
 HEADERS = {"Authorization": f"Bearer {BRIDGE_TOKEN}"}
 
-API_VERSION = "2025-11-15-preview"
+API_VERSION   = os.getenv("AZURE_API_VERSION", "2025-11-15-preview")
+RESEARCH_BASE = os.getenv("AZURE_RESEARCHER_URL")
+TRADER_BASE   = os.getenv("AZURE_TRADER_URL")
 
-RESEARCH_BASE = (
-    "https://hubassist-us2.services.ai.azure.com/"
-    "api/projects/proj-default/applications/autotrad-researcher/protocols/openai"
-)
-
-TRADER_BASE = (
-    "https://hubassist-us2.services.ai.azure.com/"
-    "api/projects/proj-default/applications/trader/protocols/openai"
-)
+if not RESEARCH_BASE or not TRADER_BASE:
+    raise RuntimeError("AZURE_RESEARCHER_URL and AZURE_TRADER_URL must be set in .env")
 
 MEMORY_PATH    = Path(__file__).resolve().parent / "trading_memory.json"
 RESEARCH_DIR   = Path(__file__).resolve().parent / "research_logs"
