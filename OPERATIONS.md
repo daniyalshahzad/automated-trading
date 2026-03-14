@@ -38,7 +38,7 @@ Launch IB Gateway from the desktop. Login with IBKR credentials → IB API → P
 **4. Start the broker bridge**
 ```bash
 cd ~/automatedtrading && source .venv/bin/activate
-nohup uvicorn broker_bridge.app:app --host 127.0.0.1 --port 8787 > ~/bridge.log 2>&1 &
+nohup ~/automatedtrading/.venv/bin/python ~/automatedtrading/watchdog.py > /dev/null 2>&1 &
 ```
 
 **5. Verify bridge is working**
